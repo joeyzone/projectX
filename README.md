@@ -12,8 +12,6 @@
 
 进入项目，执行
 
-    npm intall
-
     gulp watch //监听html,js,css文件变化,暂不支持新增,新增请重新gulp watch或者使用其他命令
 
     node server.js
