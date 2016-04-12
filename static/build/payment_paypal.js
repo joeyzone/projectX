@@ -1,0 +1,1 @@
+define("dosome",function(){console.log("do some")}),define("index",["dosome"],function(o){alert("paypal")});
