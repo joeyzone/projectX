@@ -12,7 +12,8 @@ app.use(route.get('/application/html/:dir/:name', function*(dir,name) {
 }));
 
 app.use(route.get('/static/:dir/:name', function*(dir,name) {
-    this.body = fs.readFileSync(__dirname+'/static/' + dir+'/' + name).toString();
+    this.response.type = 'text/css; charset=utf-8';
+    this.body = fs.readFileSync(__dirname+'/static/' + dir+'/' + name,{encoding:'utf-8'});
 
 }));
 
@@ -26,6 +27,6 @@ app.use(function *() {
 });
 
 
-var server = app.listen(3000, function() {
-    console.log('Koa is listening to http://localhost:3000');
+var server = app.listen(80, function() {
+    console.log('Koa is listening');
 });
