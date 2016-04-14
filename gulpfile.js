@@ -20,8 +20,10 @@ var basePath = 'static/src/biz/',
     buildPath = 'static/build/',
     commonjsPath = 'static/src/common/*.js',
     commonlessPath = 'static/src/common/*.less',
-    demoHtml = 'application/demo/**/*.html'
+    demoHtml = 'application/demo/**/*.html',
+    commonFile = 'static/src/common/*',
     mainDirArr = [],
+    pageIds = [],
     taskList = [];
 
 
@@ -64,6 +66,8 @@ function gulpcss(path,modName){
                     var jscssId = mainDir + '_' + pagedir;
 
                     taskList.push([fullPagedir,jscssId,mainDir,pagedir]);
+
+                    pageIds.push(jscssId);
 
                     gulp.task('js:' + jscssId, function(){
                         gulpjs(fullPagedir,jscssId);
@@ -122,6 +126,7 @@ var getHtmlTask=function(dir,name,pageId){
     var htmlPath = 'application/demo/' + dir + '/' + name + '.html',
         cssPath = 'static/build/' + pageId + '.css',
         jsPath = 'static/build/' + pageId + '.js';
+        
 
     return gulp.src(htmlPath)
 
@@ -147,13 +152,21 @@ gulp.task('task', function(){
 });
 
 gulp.task('watch', function(){
-    gulp.watch([basePath + '**/**/*',commonjsPath,commonlessPath,demoHtml],function(e){
+    gulp.watch([basePath + '**/**/*',commonjsPath,commonlessPath,demoHtml,commonFile],function(e){
         var start = e.path.indexOf('/biz') + 5,
             end = e.path.lastIndexOf('/'),
             patharr = e.path.slice(start,end).split('/'),
             path = patharr.join('/');
             modename = patharr.join('_');
 
+        if(e.path.indexOf('/common/') >= 0){
+            _.each(taskList,function(taskParam) {
+                getHtmlTask(taskParam[2],taskParam[3],taskParam[1]);
+                gulpjs(taskParam[0],taskParam[1]);
+                gulpcss(taskParam[0],taskParam[1]);
+            });
+            return;
+        }
         if(e.path.indexOf('.js') >= 0){
             gulpjs(basePath + path,modename);
         }else if(e.path.indexOf('.less') >= 0){
@@ -164,10 +177,126 @@ gulp.task('watch', function(){
                 patharr = e.path.slice(start,end).split('/'),
                 path = patharr.join('/');
                 modename = patharr.join('_');
-            
             getHtmlTask(patharr[0],patharr[1],modename);
         }
         
     });
-})
+});
+
+
+gulp.task('init-widget', function(){
+    var conf = JSON.parse(fs.readFileSync('./widget-cf.json').toString());
+        
+
+    pageIds.map(function(pageId){
+        var concatfiles = [];
+        if(!conf[pageId]){
+            return;
+        }
+        var filses = conf[pageId]['widgets'];
+        conf[pageId].widgets.map(function(v){
+            concatfiles.push('static/widget/src/' + v);
+        });
+
+        gulp.src(concatfiles)
+        .pipe(concat(pageId + '.widget.js'))
+        .pipe(gulp.dest('static/widget/build/'));
+    });
+
+});
+
+gulp.task('widget',function(){
+    var inquirer = require('inquirer');
+
+    var widgetPath = 'static/widget/src/',
+        startdiv = new inquirer.Separator('= The Start ='),
+        enddiv = new inquirer.Separator('= The End = \n'),
+        pageIdsCh = [];
+
+    pageIdsCh.push(startdiv);
+    pageIdsCh = pageIdsCh.concat(pageIds);
+    pageIdsCh.push(enddiv);
+    inquirer.prompt([
+        {
+            type: 'list',
+            message: 'Select pageId 选择要操作的pageId',
+            name: 'pageId',
+            choices: pageIdsCh,
+            validate: function (answer) {
+              if (answer.length < 1) {
+                return '请选择一个pageId，或者按Crtl+C放弃执行';
+              }
+              return true;
+            }
+        }
+    ])
+    .then(function (answers) {
+        chooseWidget(answers.pageId)
+    });
+
+    function chooseWidget(pageId){
+        var files,
+            hasConf = false,
+            choicesW = [],
+            conf;
+
+        choicesW.push(startdiv);
+        files = fs.readdirSync(widgetPath);
+        console.log(files)
+        files.map(function(v){
+            conf = JSON.parse(fs.readFileSync('widget-cf.json').toString());
+            if(!conf[pageId]){
+                var filesobj = {};
+                filesobj.name = v;
+                choicesW.push(filesobj);
+                hasConf = false;
+            }else{
+                var widgets = conf[pageId].widgets,
+                    ischecked;
+
+                ischecked = _.indexOf(widgets,v) >= 0? true : false;
+                var filesobj = {};
+                filesobj.name = v;
+                filesobj.checked = ischecked;
+                choicesW.push(filesobj);
+                hasConf = true;
+
+            }
+            
+        });
+        choicesW.push(enddiv);
+        inquirer.prompt([
+            {
+                type: 'checkbox',
+                message: 'Select widget 选择要为' + pageId + '打包的组件',
+                name: 'widgets',
+                choices: choicesW,
+                validate: function (answer) {
+                  if (answer.length < 1) {
+                    return '请至少选择一个组件，或者按Crtl+C放弃执行';
+                  }
+                  return true;
+                }
+            }
+        ])
+        .then(function (answers) {
+            var concatfiles = [];
+                
+            conf[pageId] = answers;
+            
+            answers.widgets.map(function(v){
+                concatfiles.push(widgetPath + v);
+
+            });
+            
+            fs.writeFileSync('widget-cf.json' , JSON.stringify(conf, null, '  '));
+
+            gulp.src(concatfiles)
+            .pipe(concat(pageId + '.widget.js'))
+            .pipe(gulp.dest('static/widget/build/'));
+
+        });
+    }
+});
+
 

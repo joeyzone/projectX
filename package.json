@@ -6,10 +6,11 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "jun.lu",
   "license": "ISC",
   "dependencies": {
     "amd-optimize": "^0.6.1",
+    "commander": "^2.9.0",
     "crypto": "0.0.3",
     "ejs": "^2.4.1",
     "gulp": "^3.9.1",
@@ -20,9 +21,10 @@
     "gulp-rename": "^1.2.2",
     "gulp-replace": "^0.5.4",
     "gulp-uglify": "^1.5.3",
-    "gulp-wrap-amd": "^0.5.0",
+    "inquirer": "^1.0.0",
     "jshint": "^2.9.1",
     "jshint-stylish": "^2.1.0",
+    "junk": "^1.0.2",
     "koa": "^2.0.0",
     "koa-convert": "^1.2.0",
     "koa-route": "^2.4.2",

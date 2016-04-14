@@ -26,4 +26,8 @@
 
     gulp all //打包所有
 
+    gulp widget //打包组件
+
+    
+
 

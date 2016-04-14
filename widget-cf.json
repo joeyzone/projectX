@@ -1,0 +1,14 @@
+{
+  "payment_paypal": {
+    "widgets": [
+      "alert.js",
+      "form.js"
+    ]
+  },
+  "welcome_app": {
+    "widgets": [
+      "alert.js",
+      "validate.js"
+    ]
+  }
+}
