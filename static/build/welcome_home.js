@@ -1,1 +1,1 @@
-define("mod1",function(){return console.log("ths is mod1 code"),{str:"this is relate mod1"}}),define("head",function(){console.log("head11")}),define("index",["mod1","head"],function(e,o){alert(e.str)});
+define("mod1",function(){return console.log("ths is mod1 code"),{str:"this is relate mod1"}}),define("alert",[],function(){return console.log("alert"),alert}),define("head",["alert"],function(e){console.log("head11"),console.log(e)}),define("index",["mod1","head"],function(e,o){alert(e.str)});

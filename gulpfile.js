@@ -22,17 +22,20 @@ var basePath = 'static/src/biz/',
     commonlessPath = 'static/src/common/*.less',
     demoHtml = 'application/demo/**/*.html',
     commonFile = 'static/src/common/*',
-    layoutFile = 'application/layout/*.html',   
+    layoutFile = 'application/layout/*.html',
+    widgetFile = 'static/widget/src/*.js',
     mainDirArr = [],
     pageIds = [],
     taskList = [];
 
+var reqOption = "";
+
 
 function gulpjs(path,modName){
-    var jspath = [path + '/*.js' , commonjsPath];
+    var jspath = [path + '/*.js', commonjsPath, widgetFile];
 
     return gulp.src(jspath)
-        .pipe(amdOptimize('index'))
+        .pipe(amdOptimize('index', reqOption))
         .pipe(concat('index.js'))
         .pipe(jshint())
         .pipe(jshint.reporter('jshint-stylish'))
@@ -148,7 +151,8 @@ gulp.task('html', function(){
     });
 });
 
-gulp.task('task', function(){
+gulp.task('task', function(cm){
+    console.log(cm);
     console.log(taskList);
 });
 

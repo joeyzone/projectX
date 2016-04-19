@@ -17,7 +17,6 @@
         "alert.css"
       ],
       "js": [
-        "alert.js",
         "validate.js"
       ]
     }

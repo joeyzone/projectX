@@ -1,1 +1,1 @@
-define("head",function(){console.log("head11")}),define("index",["head"],function(e){alert("app")});
+define("alert",[],function(){return console.log("alert"),alert}),define("head",["alert"],function(e){console.log("head11"),console.log(e)}),define("index",["head"],function(e){alert("app")});

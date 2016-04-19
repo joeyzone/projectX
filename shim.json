@@ -1,0 +1,7 @@
+{
+    "shim": {
+        "alert" : {
+            "exports": "alert"
+        }
+    }
+}
