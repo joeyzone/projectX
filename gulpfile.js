@@ -28,8 +28,8 @@ var basePath = 'static/src/biz/',
     pageIds = [],
     taskList = [];
 
-var reqOption = "";
-
+var reqOption = require('./shim.json');
+console.log(reqOption);
 
 function gulpjs(path,modName){
     var jspath = [path + '/*.js', commonjsPath, widgetFile];
